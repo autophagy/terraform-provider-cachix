@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"github.com/autophagy/terraform-provider-cachix/cachix"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+)
 
+//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --provider-name cachix
 func main() {
-	fmt.Println("Hello Nix!")
+	providerserver.Serve(context.Background(), cachix.New, providerserver.ServeOpts{
+		Address: "autophagy/cachix",
+	})
 }

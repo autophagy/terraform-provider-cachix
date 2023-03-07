@@ -20,8 +20,10 @@
             pname = "terraform-provider-cachix";
             inherit version;
             src = ./.;
-
-            vendorSha256 = "sha256-pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=";
+            vendorSha256 = "sha256-bsuWsIOUlgzTOVXqLk2YgI4Nw6yPI1V7D3Bzoew7Y2o=";
+            preBuild = ''
+              ${pkgs.go-swagger}/bin/swagger generate client -f swagger/swagger-v1.json -T swagger/templates --allow-template-override
+            '';
           };
         });
 
@@ -31,7 +33,12 @@
         in
         {
           default = pkgs.mkShell {
-            buildInputs = with pkgs; [ go gopls gotools go-tools ];
+            buildInputs = with pkgs; [ go gopls gotools go-tools go-swagger ];
+            shellHook = ''
+              if [ ! -d "client" ] || [ ! -d "models" ]; then
+                ${pkgs.go-swagger}/bin/swagger generate client -f swagger/swagger-v1.json -T swagger/templates --allow-template-override
+              fi
+            '';
           };
         });
 
